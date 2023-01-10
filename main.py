@@ -5,93 +5,96 @@ from Database_manager import Database
 from Google_Calendar_APIs import Add_Event, get_list_event, Update_event
 import serect
 
-# username = serect.get_username()
-# password = serect.get_password()
+username = serect.get_username()
+password = serect.get_password()
 
 
-# driver = webdriver.Chrome()
-# driver.get("https://fap.fpt.edu.vn/")
+driver = webdriver.Chrome()
+driver.get("https://fap.fpt.edu.vn/")
 
 
-# #select campus
-# select_campus = Select(driver.find_element(By.ID, "ctl00_mainContent_ddlCampus"))
-# HCM_campus = select_campus.select_by_visible_text("FU-Hồ Chí Minh")
+#select campus
+select_campus = Select(driver.find_element(By.ID, "ctl00_mainContent_ddlCampus"))
+HCM_campus = select_campus.select_by_visible_text("FU-Hồ Chí Minh")
 
-# #Sign_in button and switch page to enter
-# sign_in = driver.find_element(By.XPATH, '//*[@id="loginform"]/center/div/div[2]/div/div/div/span')
-# sign_in.click()
+#Sign_in button and switch page to enter
+sign_in = driver.find_element(By.XPATH, '//*[@id="loginform"]/center/div/div[2]/div/div/div/span')
+sign_in.click()
 
-# pages = driver.window_handles
-# base_page = pages[0]
-# print(f'Switching window {driver.window_handles[1]} ')
-# driver.switch_to.window(driver.window_handles[1])
-# #Enter email to login
-# email_in = driver.find_element(By.ID, "identifierId").send_keys(username)
-# continue_click = driver.find_element(By.XPATH, '//*[@id="identifierNext"]/div/button/span')
-# continue_click.click()
+pages = driver.window_handles
+base_page = pages[0]
+print(f'Switching window {driver.window_handles[1]} ')
+driver.switch_to.window(driver.window_handles[1])
+#Enter email to login
+email_in = driver.find_element(By.ID, "identifierId").send_keys(username)
+continue_click = driver.find_element(By.XPATH, '//*[@id="identifierNext"]/div/button/span')
+continue_click.click()
 
-# driver.implicitly_wait(30)
-# #Enter password
-# password_in = driver.find_element(By.XPATH, '//*[@id="password"]/div[1]/div/div[1]/input').send_keys(password)
-# continue_click = driver.find_element(By.XPATH, '//*[@id="passwordNext"]/div/button/span')
-# continue_click.click()
+driver.implicitly_wait(30)
+#Enter password
+password_in = driver.find_element(By.XPATH, '//*[@id="password"]/div[1]/div/div[1]/input').send_keys(password)
+continue_click = driver.find_element(By.XPATH, '//*[@id="passwordNext"]/div/button/span')
+continue_click.click()
 
+driver.switch_to.window(base_page)
 
+#Enter to Attendency Report to collect data
+print('Click attendency_report')
+attendency_report = driver.find_element(By.XPATH,
+    '/html/body/div/div[2]/div/form/table/tbody/tr[1]/td/div/div/div[1]/div[2]/div/table/tbody/tr/td/table/tbody/tr[3]/td[2]/ul/li[1]/a')
+attendency_report.click()
 
-# driver.switch_to.window(base_page)
+print('Colleting data starting ...')
+semester_frame = driver.find_element(By.XPATH,
+     '/html/body/div/div[2]/div/form/table/tbody/tr[1]/td/div/table/tbody/tr/td/table/tbody/tr/td[2]/div')
+     
+semesters = semester_frame.find_elements(By.TAG_NAME,'td')
+storage = Database(semesters[-1].text)
+print(f'Semester is {semesters[-1].text}')
 
-# #Enter to Attendency Report to collect data
-# print('Click attendency_report')
-# attendency_report = driver.find_element(By.XPATH, '/html/body/div/div[2]/div/form/table/tbody/tr[1]/td/div/div[2]/div[1]/div[2]/div/table/tbody/tr/td/table/tbody/tr[3]/td[2]/ul/li[1]/a')
-# attendency_report.click()
-
-# print('Colleting data starting ...')
-# semester_frame = driver.find_element(By.XPATH, '/html/body/div/div[2]/div/form/table/tbody/tr[1]/td/div/table/tbody/tr/td[1]/table/tbody/tr/td[2]/div/table/tbody')
-# semesters = semester_frame.find_elements(By.TAG_NAME,'td')
-# storage = Database(semesters[-1].text)
-# print(f'Semester is {semesters[-1].text}')
-
-# course_frame = driver.find_element(By.XPATH, '/html/body/div/div[2]/div/form/table/tbody/tr[1]/td/div/table/tbody/tr/td[1]/table/tbody/tr/td[3]/div/table')
-# courses = course_frame.find_elements(By.TAG_NAME, 'td')
-# ID_courselist = list()
-# for course in courses:
-#     course_name = course.text.replace('(',',').replace(')',',').split(',')[0].strip()
-#     course_id = course.text.replace('(',',').replace(')',',').split(',')[1].strip()
-#     ID_courselist.append(course_id)
-#     storage.addValue_Course(course_id,course_name)
-#     print(f'Add {course_name}, {course_id} to databse Course')
-
-
-# i = 2
-# index_course = 0
-# while i  <= len(courses)+1:
-#     try:
-#         # Get the schedual frame
-#         schedual_frame = driver.find_element(By.XPATH, '/html/body/div/div[2]/div/form/table/tbody/tr[1]/td/div/table/tbody/tr/td[2]/table/tbody[2]')
-#         schedual = schedual_frame.find_elements(By.TAG_NAME, 'td')
-
-#         index_DOWDateMonth, index_Slot, index_Class= 1, 2, 5
-#         while index_Class < len(schedual):
-#             DOWDate_Month, Slot=  schedual[index_DOWDateMonth].text, schedual[index_Slot].text
-#             Date = DOWDate_Month.split(' ')[1]
-#             print(f'Date: {Date} - Slot: {Slot}')
-#             storage.addValue_Calendar(Date,Slot, ID_courselist[index_course])
-#             index_DOWDateMonth += 8
-#             index_Slot += 8
-#             index_Class += 8
+course_frame = driver.find_element(By.XPATH, '/html/body/div/div[2]/div/form/table/tbody/tr[1]/td/div/table/tbody/tr/td[1]/table/tbody/tr/td[3]/div/table')
+courses = course_frame.find_elements(By.TAG_NAME, 'td')
+ID_courselist = list()
+for course in courses:
+    course_name = course.text.replace('(',',').replace(')',',').split(',')[0].strip()
+    course_id = course.text.replace('(',',').replace(')',',').split(',')[1].strip()
+    ID_courselist.append(course_id)
+    storage.addValue_Course(course_id,course_name)
+    print(f'Add {course_name}, {course_id} to databse Course')
 
 
-#         next_course = driver.find_element(By.XPATH, f'/html/body/div/div[2]/div/form/table/tbody/tr[1]/td/div/table/tbody/tr/td[1]/table/tbody/tr/td[3]/div/table/tbody/tr[{i}]/td/a')
-#         print(f'\n====\nNext course is : {next_course.text}')
-#         next_course.click()
-#         index_course +=1
-#         i += 1
-#     except:
-#         break
-# driver.quit()
+i = 2
+index_course = 0
+while i  <= len(courses)+1:
+    try:
+        # Get the schedual frame
+        schedual_frame = driver.find_element(By.XPATH, '/html/body/div/div[2]/div/form/table/tbody/tr[1]/td/div/table/tbody/tr/td[2]/table/tbody[2]')
+        schedual = schedual_frame.find_elements(By.TAG_NAME, 'td')
 
-storage = Database('Fall2022')
+        index_DOWDateMonth, index_Slot, index_Class= 1, 2, 5
+        while index_Class < len(schedual):
+            DOWDate_Month, Slot_Time=  schedual[index_DOWDateMonth].text, schedual[index_Slot].text
+            Date = DOWDate_Month.split(' ')[1]
+            Time = Slot_Time.replace('(',',').replace(')',',').split(',')[1]
+            print(f'Date: {Date} - Time: {Time}')
+            storage.addValue_Calendar(Date,Time, ID_courselist[index_course])
+            index_DOWDateMonth += 8
+            index_Slot += 8
+            index_Class += 8
+
+
+        next_course = driver.find_element(By.XPATH, f'/html/body/div/div[2]/div/form/table/tbody/tr[1]/td/div/table/tbody/tr/td[1]/table/tbody/tr/td[3]/div/table/tbody/tr[{i}]/td/a')
+        print(f'\n====\nNext course is : {next_course.text}')
+        next_course.click()
+        index_course +=1
+        i += 1
+    except:
+        break
+driver.quit()
+
+# storage = Database('Spring2023')
 datas = storage.retrive_Calendar()
+print(datas[0])
 ls_event_id = get_list_event()
 print(f'\n List event id in google calendar:\n{ls_event_id}')
 if ls_event_id is None:

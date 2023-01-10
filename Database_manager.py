@@ -40,16 +40,15 @@ class Database:
         except(Exception, sqlite3.Error) as error:
             print(error)
 
-    def addValue_Calendar(self,Date: str, Slot: str, Course_ID: str):
+    def addValue_Calendar(self,Date: str, Time: str, Course_ID: str):
         try:
-            Slot_Dict = {'1': '7:00-9:15', '2': '9:45-12:00', '3': '12:30-14:45', '4': '15:15-17:30'}
+            # Slot_Dict = {'1': '7:00-8:30', '2': '8:45-10:15', '3': '12:30-14:45', '4': '15:00-17:30', '7': '17:45-19h15'}
 
             Dates = Date.split("/")
             Date = '-'.join(i for i in Dates[::-1])
-            ID = str(Course_ID.lower() + ''.join(i for i in Dates[::-1]) + Slot)
-            Time = Slot_Dict[Slot].split('-')
-            Time_Start = Time[0]
-            Time_End = Time[1]
+            ID = str(Course_ID.lower() + ''.join(i for i in Dates[::-1]) + Time)
+            Time_Start = Time.split('-')[0]
+            Time_End = Time.split('-')[1]
 
             self.cursor.execute("SELECT Calendar.ID FROM Calendar")
             ls_calendar_id =  [id[0] for id in self.cursor.fetchall()]
@@ -76,7 +75,8 @@ class Database:
 
     def retrive_Calendar(self):
         try:
-            self.cursor.execute("SELECT Course.Name, Calendar.Date, Calendar.Time_Start, Calendar.Time_End, Calendar.ID, Calendar.ID_Event FROM Calendar JOIN Course on Course.ID_Course = Calendar.ID_Course")
+            self.cursor.execute("""SELECT Course.Name, Calendar.Date, Calendar.Time_Start, Calendar.Time_End, Calendar.ID, Calendar.ID_Event
+                 FROM Calendar JOIN Course on Course.ID_Course = Calendar.ID_Course""")
             result = self.cursor.fetchall()
             return result
         except (Exception, sqlite3.Error) as error:
